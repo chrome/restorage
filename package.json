@@ -1,0 +1,33 @@
+{
+  "name": "restorage",
+  "version": "1.0.0",
+  "description": "Simple state storage for React components",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel ./src/restorage.jsx --out-file ./lib/restorage.js",
+    "prepublish": "npm run build"
+  },
+  "author": {
+    "email": "alex@chrome-its.me",
+    "name": "Alex Chrome",
+    "url": "http://github.com/chrome"
+  },
+  "license": "MIT",
+  "homepage": "http://github.com/chrome/restorage",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrome/restorage.git"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.5.1",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-react": "^6.5.0"
+  },
+  "peerDependencies": {
+    "react": "^0.14.7"
+  },
+  "dependencies": {
+    "immutable": "^3.7.6",
+    "lodash": "^4.5.0"
+  }
+}

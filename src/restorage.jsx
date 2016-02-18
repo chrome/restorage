@@ -4,6 +4,7 @@ import shallowequal from 'shallowequal'
 
 import React from 'react'
 import uniqueId from 'lodash/uniqueId'
+import isObject from 'lodash/isObject'
 import isFunction from 'lodash/isFunction'
 import toPath from 'lodash/toPath'
 
@@ -12,6 +13,7 @@ export default class Restorage {
     this.__bindedMethods = []
     this.__connectedComponents = {}
     this.__handleStoreUpdate(Immutable.fromJS(initialData))
+    this.connect = this.connect.bind(this)
   }
 
   __addUpdateListener(scheme, wrapper, callback) {
@@ -77,7 +79,17 @@ export default class Restorage {
 
   __getSubSet(scheme) {
     return Object.keys(scheme).reduce((result, key) => {
-      return Object.assign(result, {[key]: this.__getJSValue(this.__store, scheme[key])})
+      if (key === '*') {
+        const value = this.__getJSValue(this.__store, scheme[key])
+        if (isObject(value)) {
+          return Object.assign(result, this.__getJSValue(this.__store, scheme[key]))
+        } else {
+          console.warn('Scheme warning: "*" is linked to non object (ignored).')
+          return result
+        }
+      } else {
+        return Object.assign(result, {[key]: this.__getJSValue(this.__store, scheme[key])})
+      }
     }, {})
   }
 
@@ -121,14 +133,15 @@ export default class Restorage {
 
 
   connect() {
-    if (arguments.length == 1) {
-      // Used as decorator
+    const defaultScheme = {'*': '*'}
+    if (arguments.length === 1 && !(arguments[0].prototype && arguments[0].prototype.render)) {
+      // Used as decorator with params
       const [scheme] = arguments
-      return (Component) => this.__decorate(Component, scheme, this)
+      return ((Component) => this.__decorate(Component, scheme || defaultScheme, this))
     } else {
-      // Used as method
+      // Used as method or as decorator with default schema
       const [Component, scheme] = arguments
-      return this.__decorate(Component, scheme, this)
+      return this.__decorate(Component, scheme || defaultScheme, this)
     }
   }
 }

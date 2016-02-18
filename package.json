@@ -2,7 +2,7 @@
   "name": "restorage",
   "version": "1.0.0",
   "description": "Simple state storage for React components",
-  "main": "index.js",
+  "main": "lib/restorage.js",
   "scripts": {
     "build": "babel ./src/restorage.jsx --out-file ./lib/restorage.js",
     "prepublish": "npm run build"

@@ -1,5 +1,6 @@
 import Immutable from 'immutable'
 import Cursor from 'immutable/contrib/cursor'
+import shallowequal from 'shallowequal'
 
 import React from 'react'
 import uniqueId from 'lodash/uniqueId'
@@ -80,39 +81,54 @@ export default class Restorage {
     }, {})
   }
 
-  connect(scheme) {
-    const store = this
-    return function(Component) {
-      return class ConnectedComponent extends React.Component {
-        _updateStore() {
-          this.store = store.__getSubSet(store.__cleanScheme(scheme, this.props))
-        }
 
-        componentWillMount() {
-          this.useDynamicScheme = isFunction(scheme)
-          this.storeListenerId = store.__addUpdateListener(scheme, this, () => {
-            this._updateStore()
-            this.forceUpdate()
-          })
+  __decorate(Component, scheme, store = this) {
+    return class ConnectedComponent extends React.Component {
+      _updateStore() {
+        this.store = store.__getSubSet(store.__cleanScheme(scheme, this.props))
+      }
+
+      componentWillMount() {
+        this.useDynamicScheme = isFunction(scheme)
+        this.storeListenerId = store.__addUpdateListener(scheme, this, () => {
           this._updateStore()
-        }
+          this.forceUpdate()
+        })
+        this._updateStore()
+      }
 
-        componentWillReceiveProps(nextProps) {
-          if (this.useDynamicScheme) {
-            this.store = store.__getSubSet(store.__cleanScheme(scheme, nextProps))
-          }
-        }
-
-        componentWillUnount() {
-          store.__removeUpdateListener(this.storeListenerId)
-        }
-
-        render() {
-          return (
-            <Component {...this.props} {...this.store}/>
-          )
+      componentWillReceiveProps(nextProps) {
+        if (this.useDynamicScheme) {
+          this.store = store.__getSubSet(store.__cleanScheme(scheme, nextProps))
         }
       }
+
+      componentWillUnount() {
+        store.__removeUpdateListener(this.storeListenerId)
+      }
+
+      shouldComponentUpdate(nextProps) {
+        return !shallowequal(this.props, nextProps)
+      }
+
+      render() {
+        return (
+          <Component {...this.props} {...this.store}/>
+        )
+      }
+    }
+  }
+
+
+  connect() {
+    if (arguments.length == 1) {
+      // Used as decorator
+      const [scheme] = arguments
+      return (Component) => this.__decorate(Component, scheme, this)
+    } else {
+      // Used as method
+      const [Component, scheme] = arguments
+      return this.__decorate(Component, scheme, this)
     }
   }
 }

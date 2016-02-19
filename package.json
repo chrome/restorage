@@ -1,6 +1,6 @@
 {
   "name": "restorage",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Simple state storage for React components",
   "main": "lib/restorage.js",
   "scripts": {

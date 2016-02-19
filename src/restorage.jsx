@@ -84,7 +84,7 @@ export default class Restorage {
         if (isObject(value)) {
           return Object.assign(result, this.__getJSValue(this.__store, scheme[key]))
         } else {
-          console.warn('Scheme warning: "*" is linked to non object (ignored).')
+          // console.warn('Scheme warning: "*" is linked to non object (ignored).')
           return result
         }
       } else {
@@ -115,7 +115,7 @@ export default class Restorage {
         }
       }
 
-      componentWillUnount() {
+      componentWillUnmount() {
         store.__removeUpdateListener(this.storeListenerId)
       }
 

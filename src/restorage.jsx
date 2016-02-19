@@ -34,10 +34,12 @@ export default class Restorage {
     this.__bindMethods(this.__cursor)
 
     Object.keys(this.__connectedComponents).forEach((id) => {
-      const {scheme: dirtyScheme, wrapper, callback} = this.__connectedComponents[id]
-      const scheme = this.__cleanScheme(dirtyScheme, wrapper.props)
-      if (this.__subsetChanged(scheme, prevStore)) {
-        callback(this.__getSubSet(scheme))
+      if (this.__connectedComponents[id]) {
+        const {scheme: dirtyScheme, wrapper, callback} = this.__connectedComponents[id]
+        const scheme = this.__cleanScheme(dirtyScheme, wrapper.props)
+        if (this.__subsetChanged(scheme, prevStore)) {
+          callback(this.__getSubSet(scheme))
+        }
       }
     })
   }
